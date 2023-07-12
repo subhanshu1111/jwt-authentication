@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
-
 class User {
-  static initialize() {
+   static initialize() {
     const userSchema = new mongoose.Schema({
       email: {
         type: String,
@@ -18,8 +17,9 @@ class User {
       },
     });
 
-    return mongoose.model("User", userSchema);
-  }
+   return mongoose.model("User", userSchema);
+ }
 }
+// const User = mongoose.model("User", userSchema);
 
 module.exports = User.initialize();
