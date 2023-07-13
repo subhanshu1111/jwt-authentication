@@ -6,9 +6,9 @@ class AuthController {
   handleErrors = (err) => {
     console.log(err.message, err.code);
     //print the error object outside the if condition
-    if(err.code === 11000){
-        err.message = "Email already exists";
-    }
+    // if(err.code === 11000){
+    //     err.message = "Email already exists";
+    // }
     if (err.message.includes("user validation failed")) {
       console.log(err); //doesnt work
     }
