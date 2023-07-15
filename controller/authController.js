@@ -6,13 +6,18 @@ class AuthController {
 
   handleErrors = (err) => {
     console.log(err.message, err.code);
-    //print the error object outside the if condition
-    // if(err.code === 11000){
-    //     err.message = "Email already exists";
-    // }
-    if (err.message.includes("user validation failed")) {
-      console.log(err); //doesnt work
+    let errors = { email: "", password: "" };
+    //duplicate error code
+    if(err.code === 11000){
+      errors.email = "that email is already registered";  
+      return errors;
     }
+    if (err.message.includes("user validation failed")) {
+      Object.values(err.errors).forEach(({ properties }) => {
+        errors[properties.path] = properties.message;
+      });
+    }
+    return errors;
   };
   maxAge = 3*24*60*60;
   createToken = (id)=>{
@@ -33,19 +38,24 @@ class AuthController {
     try {
       const user = await User.create({ email, password });
       const token = this.createToken(user._id);
-      res.cookie = ('jwt',token,{httpOnly:true,maxAge:this.maxAge *1000})
+      res.cookie('jwt',token,{httpOnly:true,maxAge:this.maxAge *1000})
       res.status(201).json({user:user._id});
     } catch (err) {
-      this.handleErrors(err);
-      res.status(400).send(err.message);
+     const errors= this.handleErrors(err);
+       
+      res.status(400).json({ errors });
     }
   };
 
 
   login_post = async (req, res) => {
-    const { email, password } = req.body;
-    res.send("new login");
-    console.log(email);
+    try{
+      const user = await User.login(email,password)
+
+      res.status(200).json({user:user._id})  
+    }catch(err){
+      res.status(400).json({})
+    }
   };
 }
 module.exports = AuthController;
