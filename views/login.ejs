@@ -34,10 +34,8 @@ try{
     emailError.textContent = data.errors.email;
     passwordError.textContent = data.errors.password;
   }
-  //redirect user to homepage after signing up(if there is no error)
-  if(data.user){
-    location.assign('/');
-  } 
+
+  
 }catch(err){
 
 }

@@ -50,6 +50,7 @@ class AuthController {
 
   login_post = async (req, res) => {
     try{
+      const {email,password}=req.body;
       const user = await User.login(email,password)
 
       res.status(200).json({user:user._id})  
