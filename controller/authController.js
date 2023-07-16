@@ -3,10 +3,18 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 class AuthController {
   //check if the error is a mongoose error
-
+  maxAge = 3*24*60*60;
   handleErrors = (err) => {
     console.log(err.message, err.code);
     let errors = { email: "", password: "" };
+
+    //incorrect email
+    if(err.message === 'incorrect email'){
+      errors.email = 'that email is not registered';
+    }
+    if(err.message === 'incorrect password'){
+      errors.password = 'password incorrect'
+    }
     //duplicate error code
     if(err.code === 11000){
       errors.email = "that email is already registered";  
@@ -19,7 +27,7 @@ class AuthController {
     }
     return errors;
   };
-  maxAge = 3*24*60*60;
+ 
   createToken = (id)=>{
     return jwt.sign({id},'subhanshu secret',{
       expiresIn:this.maxAge
@@ -49,14 +57,21 @@ class AuthController {
 
 
   login_post = async (req, res) => {
+    const {email,password}=req.body;
     try{
-      const {email,password}=req.body;
+      
       const user = await User.login(email,password)
-
+      const token = this.createToken(user._id);
+      res.cookie('jwt',token,{httpOnly:true,maxAge:this.maxAge *1000})
       res.status(200).json({user:user._id})  
     }catch(err){
-      res.status(400).json({})
+      const errors = this.handleErrors(err);
+      res.status(400).json({errors})
     }
+  };
+  logout_get = (req, res) => {
+    res.cookie('jwt', '', { maxAge: 1 });
+    res.redirect('/');
   };
 }
 module.exports = AuthController;

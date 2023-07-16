@@ -17,6 +17,7 @@ class User {
         minlength: [6, 'Minimum required length is 6']
       },
     });
+    
     // userSchema.post('save',function(doc,next){
     //   console.log("new user was created and saved",doc);
     //   next();
